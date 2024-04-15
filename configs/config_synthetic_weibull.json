@@ -1,0 +1,108 @@
+{
+    "scenario":"synthetic_weibull",
+    "data":{
+      "dataFile":"../data/trainingSet_synthetic_weibull.pickle",
+      "parameterSpace":[
+         [
+            0,
+            65000
+         ],
+         [
+            0,
+            1200
+         ]
+      ],
+      "valueSpace":[0,20]
+   },
+   "resultFolder": "../results",
+   "generatorNetwork":{
+          "sequence":[3, 128,  128, 1],
+          "dropout":0.0,
+          "finishSigmoid":false
+      },
+   "criticNetwork":{
+       "sequence":[3, 128, 128, 1],
+       "dropout":0.0,
+       "finishSigmoid":false
+   },
+   "learning":{
+      "lossFunction":{
+         "id":"WASSERSTEIN_GP",
+         "gradientPenaltyFactor":10,
+         "clampThreshold":0.01
+      },
+      "batchSize":512,
+      "epochs": 4000,
+      "learningRate":{
+         "initial":0.000001,
+         "reductionFactor":1.0,
+         "reductionInterval":0,
+         "minimum":0.000001
+      }
+   },
+   "convergenceMetric": {
+      "id": "MIXED",
+      "updateInterval": 10,
+      "stoppingThreshold": 0.00001
+   },
+   "consoleLog":{
+      "updateInterval":10
+   },
+   "snapshotExport": {
+      "updateInterval":10
+   },
+   "visualisation":{
+      "updateInterval":10,
+      "views":[
+         {
+            "parameters":[
+               0,
+               null
+            ],
+            "radius":0.2
+         },
+         {
+            "parameters":[
+               0.5,
+               null
+            ],
+            "radius":0.2
+         },
+         {
+            "parameters":[
+               1.0,
+               null
+            ],
+            "radius":0.2
+         },
+         {
+            "parameters":[
+               null,
+               0.0
+            ],
+            "radius":0.2
+         },
+         {
+            "parameters":[
+               null,
+               0.7
+            ],
+            "radius":0.3
+         },
+         {
+            "parameters":[
+               0.0,
+               0.0
+            ],
+            "radius":0.3
+         },
+         {
+            "parameters":[
+               0.5,
+               0.5
+            ],
+            "radius":0.3
+         }
+      ]
+   }
+}
