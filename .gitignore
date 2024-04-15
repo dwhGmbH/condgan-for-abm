@@ -1,4 +1,6 @@
 results/
+data/trainingSet_synthetic_weibull.pickle
+data/trainingSet_ems.pickle
 
 # ghostscript backups for markdown files
 *.backup
