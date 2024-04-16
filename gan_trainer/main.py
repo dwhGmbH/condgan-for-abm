@@ -20,20 +20,23 @@ if __name__=='__main__':
         filenames = ['../configs/config_weibull_2e-7.json']
 
     useCuda = torch.cuda.is_available()
-    print('cuda: {}'.format(useCuda))
+    print(f'cuda: {useCuda}')
 
     for filename in filenames:
         print(f'run {filename}')
-        config = CondGANConfig(filename)
-        trainingParams, trainingValues = TraingSetLoader(config).load()
-        #trainingParams = trainingParams[::100, :]
-        #trainingValues = trainingValues[::100]
-        print(np.size(trainingValues, 0))
+        try:
+            config = CondGANConfig(filename)
+            trainingParams, trainingValues = TraingSetLoader(config).load()
+            #trainingParams = trainingParams[::100, :]
+            #trainingValues = trainingValues[::100]
+            print(np.size(trainingValues, 0))
 
-        ParamScaler = Scaler(trainingParams, config.get_parameter_space())
-        trainingParamsNormed = ParamScaler.downscale(trainingParams)
-        ValueScaler = Scaler(trainingValues, config.get_value_space())
-        trainingValuesNormed = ValueScaler.norm(ValueScaler.downscale(trainingValues))
+            ParamScaler = Scaler(trainingParams, config.get_parameter_space())
+            trainingParamsNormed = ParamScaler.downscale(trainingParams)
+            ValueScaler = Scaler(trainingValues, config.get_value_space())
+            trainingValuesNormed = ValueScaler.norm(ValueScaler.downscale(trainingValues))
 
-        trainer = CondGANTrainer(config,useCuda)
-        trainer.train(trainingParamsNormed,trainingValuesNormed)
+            trainer = CondGANTrainer(config,useCuda)
+            trainer.train(trainingParamsNormed,trainingValuesNormed)
+        except:
+            print(f'error ocurred for {filename}')

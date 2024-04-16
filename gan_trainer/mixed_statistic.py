@@ -6,10 +6,10 @@ from validation_statistic import ValidationStatistic
 
 
 class MixedStatistic(ValidationStatistic):
-    def __init__(self, params, vals, threshold=None, pointsPerCluster=1000, momentsCount=4, momentsWeights=None,
+    def __init__(self, params, vals, threshold=None, points=1000, momentsCount=4, momentsWeights=None,
                  use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
-        self.kstestStatistic = KSTestStatistic(params, vals, threshold=threshold,pointsPerCluster=pointsPerCluster,use_cuda=use_cuda)
+        self.kstestStatistic = KSTestStatistic(params, vals, threshold=threshold,points=points,use_cuda=use_cuda)
         self.momentsStatistic = MomentsStatistic(params, vals, threshold=None, momentsCount=momentsCount, momentsWeights=momentsWeights,use_cuda=use_cuda)
 
     def eval_generator(self, g: nn.Module) -> (dict[str,float],bool):
