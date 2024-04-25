@@ -21,7 +21,7 @@
           "finishSigmoid":false
       },
       "criticNetwork":{
-          "sequence":[3, 64, 128, 64, 1],
+          "sequence":[3, 64, 64, 1],
           "dropout":0.0,
           "finishSigmoid":false
       },

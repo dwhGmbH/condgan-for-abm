@@ -1,7 +1,7 @@
 {
-    "scenario":"synthetic_weibull",
+    "scenario":"ems_2e-7_256",
     "data":{
-      "dataFile":"../data/trainingSet_synthetic_weibull.pickle",
+      "dataFile":"../data/trainingSet_ems.pickle",
       "parameterSpace":[
          [
             0,
@@ -28,16 +28,12 @@
    "learning":{
       "lossFunction":{
          "id":"WASSERSTEIN_GP",
-         "gradientPenaltyFactor":10,
-         "clampThreshold":0.01
+         "gradientPenaltyFactor":10
       },
-      "batchSize":512,
-      "epochs": 4000,
+      "batchSize":256,
+      "epochs": 3000,
       "learningRate":{
-         "initial":0.000001,
-         "reductionFactor":1.0,
-         "reductionInterval":0,
-         "minimum":0.000001
+         "initial":0.0000002
       }
    },
    "convergenceMetric": {
