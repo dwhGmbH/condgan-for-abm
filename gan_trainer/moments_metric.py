@@ -4,7 +4,7 @@ from torch import nn
 
 from convergence_metric import ConvergenceMetric
 
-class MomentsStatistic(ConvergenceMetric):
+class MomentsMetric(ConvergenceMetric):
     def __init__(self, params, vals, threshold=None, momentsCount = 4, momentsWeights = None, use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
         self.momentsCount = momentsCount

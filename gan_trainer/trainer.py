@@ -11,9 +11,9 @@ import os
 import json
 
 from config import CondGANConfig, LossFunctionID, ConvergenceMetricsID
-from kstest_statistic import KSTestStatistic
-from mixed_statistic import MixedMetric
-from moments_statistic import MomentsStatistic
+from kstest_metric import KSTestMetric
+from mixed_metric import MixedMetric
+from moments_metric import MomentsMetric
 from networks import create_mlps_from_config
 from validation_plotter import ValidationPlotter
 
@@ -65,9 +65,9 @@ class CondGANTrainer():
         if self.config.get_convergence_metrics_update_interval() > 0:
             self.convergenceMetricID =self.config.get_convergence_metric()
             if self.convergenceMetricID == ConvergenceMetricsID.MOMENTS:
-                self.convergenceMetric = MomentsStatistic(self.trainingParameters, self.trainingValues,threshold=self.config.get_convergence_metrics_stopping_threshold(),use_cuda=self.use_cuda)
+                self.convergenceMetric = MomentsMetric(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             elif self.convergenceMetricID == ConvergenceMetricsID.KSTEST:
-                self.convergenceMetric= KSTestStatistic(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
+                self.convergenceMetric= KSTestMetric(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             elif self.convergenceMetricID == ConvergenceMetricsID.MIXED:
                 self.convergenceMetric= MixedMetric(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             self.metrics.extend(self.convergenceMetric.get_statistics_names())

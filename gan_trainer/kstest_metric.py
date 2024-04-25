@@ -4,11 +4,11 @@ from scipy.stats import qmc, kstest
 from torch import nn
 
 from gan_trainer.range_finder import RangeFinder
-from validation_statistic import ValidationStatistic
+from convergence_metric import ConvergenceMetric
 from sklearn import cluster as cl
 
 
-class KSTestStatistic(ValidationStatistic):
+class KSTestMetric(ConvergenceMetric):
     def __init__(self, params, vals, threshold = None, points = 1000, use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
         dim = np.size(params, 1)
