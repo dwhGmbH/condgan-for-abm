@@ -1,12 +1,9 @@
 from datetime import datetime
-from enum import Enum
-
 import numpy as np
 import torch
 from matplotlib import pyplot as plt
 from torch import nn
 from torch.autograd import Variable
-from torch.optim import Optimizer
 import os
 import json
 

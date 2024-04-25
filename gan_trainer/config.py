@@ -108,7 +108,7 @@ class CondGANConfig:
         Used for normalization of the training data and de-normalization of the output.
         :return: value-space of the output
         """
-        return self.file_content['data']['valueSpace']
+        return tuple(self.file_content['data']['valueSpace'])
 
     def get_loss_function_id(self) -> LossFunctionID:
         """

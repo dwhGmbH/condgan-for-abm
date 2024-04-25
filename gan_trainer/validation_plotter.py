@@ -36,10 +36,10 @@ class ValidationPlotter:
                 target = 100
             else:
                 target = 100
-            dx, logical_indices, pts = range_finder.find_in_range(values, target)
+            indices,radius = range_finder.find_nearest_s(values, target)
             self.latents[key] = torch.concat(
-                [torch.tensor(self.training_parameters[logical_indices, :]), torch.rand((pts, 1))], dim=1)
-            Y = self.training_values[logical_indices]
+                [torch.tensor(self.training_parameters[indices, :]), torch.rand((len(indices), 1))], dim=1)
+            Y = self.training_values[indices]
             if None in key:
                 dimension = key.index(None)
                 X=[x[dimension] for x in self.latents[key]]
@@ -48,7 +48,7 @@ class ValidationPlotter:
                 pl = [plt.gca(),pl]
             else:
                 pl =[plt.gca(),Y]
-            self.dxs[key] = dx
+            self.dxs[key] = radius
             if self.use_cuda:
                 self.latents[key] = self.latents[key].cuda()
             self.plothandles[key] = pl

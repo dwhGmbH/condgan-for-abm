@@ -32,7 +32,7 @@ class GenericMLP(nn.Module):
             Q.append(nn.Sigmoid())
         self.model = nn.Sequential(*Q)
 
-    def forward(self, x:torch.tensor) -> torch.tensor:
+    def forward(self, x:torch.Tensor) -> torch.Tensor:
         """
         Evaluates the model.
         :param x: input to the network

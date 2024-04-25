@@ -44,7 +44,7 @@ class KSTestMetric(ConvergenceMetric):
         self.latents = dict()
         self.range_finder = RangeFinder(params)
 
-        self.cubes = dict()
+        self.spheres = dict()
         self.vals = vals
         self.params = params
         if radius == None and s==None:
@@ -53,14 +53,14 @@ class KSTestMetric(ConvergenceMetric):
         sampled = sampler.random(n=m)
         for sample in sampled: #iterate over sampled points
             if radius !=None:
-                logicalInds, pts = self.range_finder.find_in_radius(sample, radius) #find all parameter vectors in epsilon ball
+                r = radius
+                inds, pts = self.range_finder.find_in_radius(sample, radius) #find all parameter vectors in epsilon ball
             else:
-                radius, logicalInds, pts = self.range_finder.find_in_range(sample, s) #find all parameter vectors in epsilon ball
-            # print(pts)
-            vs = vals[logicalInds] #find corresponding values
-            self.cubes[tuple(sample)] = [sample, radius] #bookkeeping for validation
+                inds, r = self.range_finder.find_nearest_s(sample, s) #find all parameter vectors in epsilon ball
+            vs = vals[inds] #find corresponding values
+            self.spheres[tuple(sample)] = [sample, r] #bookkeeping for validation
             self.reference[tuple(sample)] = vs
-            self.latents[tuple(sample)] = torch.concat([torch.tensor(params[logicalInds]), torch.rand((pts, 1))], dim=1)
+            self.latents[tuple(sample)] = torch.concat([torch.tensor(params[inds]), torch.rand((len(inds), 1))], dim=1)
             if self.use_cuda:
                 self.latents[tuple(sample)] = self.latents[tuple(sample)].cuda()
 
@@ -71,10 +71,10 @@ class KSTestMetric(ConvergenceMetric):
         """
         from matplotlib import pyplot as plt
         for k in self.reference.keys():
-            mid = self.cubes[k][0]
-            rad = self.cubes[k][1]
-            plt.plot([mid[0] - rad, mid[0] - rad, mid[0] + rad, mid[0] + rad, mid[0] - rad],
-                     [mid[1] - rad, mid[1] + rad, mid[1] + rad, mid[1] - rad, mid[1] - rad], linewidth=0.1, zorder=0)
+            mid = self.spheres[k][0]
+            rad = self.spheres[k][1]
+            circle = plt.Circle((mid[0],mid[1]),rad,linewidth=0.1, zorder=0, fill= False)
+            plt.gca().add_patch(circle)
         plt.scatter([x[0] for x in self.params[::1000]], [x[1] for x in self.params[::1000]], s=0.1, color='k',
                     marker='.', zorder=1)
         
@@ -90,6 +90,7 @@ class KSTestMetric(ConvergenceMetric):
         stats2 = list()
         for p in self.reference.keys(): # iterate over all epsion balls
             gen = generator(self.latents[p]).detach().cpu() # generate from latents
+            gen = np.array(gen).reshape([len(self.latents[p])]) # reshape for kstest
             st = kstest(self.reference[p], gen) # compute KS Test
             stats1.append(st[0])
             stats2.append(st[1])

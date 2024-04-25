@@ -33,16 +33,17 @@ if __name__=='__main__':
         try:
             config = CondGANConfig(filename) #create configuration instance
             trainingParams, trainingValues = TraingSetLoader(config).load() #load training data
-            #trainingParams = trainingParams[::100, :]
-            #trainingValues = trainingValues[::100]
+            trainingParams = trainingParams[::100, :]
+            trainingValues = trainingValues[::100]
             print(np.size(trainingValues, 0))
 
-            ParamScaler = Scaler(trainingParams, config.get_parameter_space())
+            ParamScaler = Scaler(space = config.get_parameter_space())
             trainingParamsNormed = ParamScaler.downscale(trainingParams) #downscale the training parameters
-            ValueScaler = Scaler(trainingValues, config.get_value_space())
+            ValueScaler = Scaler(space = config.get_value_space())
             trainingValuesNormed = ValueScaler.clamp(ValueScaler.downscale(trainingValues)) #downscale and clamp the training values
             trainer = CondGANTrainer(config,useCuda) #initialise trainer
             trainer.train(trainingParamsNormed,trainingValuesNormed) #run training
         except:
+            raise
             # catch to continue with next config even if an error ocurred
             print(f'error ocurred for {filename}')
