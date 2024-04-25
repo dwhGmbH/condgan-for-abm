@@ -2,13 +2,15 @@ from typing import Any
 
 import numpy as np
 import torch
-from scipy.stats import qmc, kstest
+from scipy.stats import kstest
 from torch import nn
-from validation_statistic import ValidationStatistic
+from convergence_metric import ConvergenceMetric
 from sklearn import cluster as cl
 
-
-class KSTestStatistic(ValidationStatistic):
+class KSTestStatistic(ConvergenceMetric):
+    """
+    KSTestStatistic class is used to compute a convergenceMetric
+    """
     def __init__(self, params, vals, threshold = None, pointsPerCluster = 1000, use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
         N = len(vals)

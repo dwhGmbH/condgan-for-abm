@@ -12,7 +12,7 @@ import json
 
 from config import CondGANConfig, LossFunctionID, ConvergenceMetricsID
 from kstest_statistic import KSTestStatistic
-from mixed_statistic import MixedStatistic
+from mixed_statistic import MixedMetric
 from moments_statistic import MomentsStatistic
 from networks import create_mlps_from_config
 from validation_plotter import ValidationPlotter
@@ -69,7 +69,7 @@ class CondGANTrainer():
             elif self.convergenceMetricID == ConvergenceMetricsID.KSTEST:
                 self.convergenceMetric= KSTestStatistic(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             elif self.convergenceMetricID == ConvergenceMetricsID.MIXED:
-                self.convergenceMetric= MixedStatistic(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
+                self.convergenceMetric= MixedMetric(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             self.metrics.extend(self.convergenceMetric.get_statistics_names())
         self.metricValues = {x:0 for x in self.metrics}
         self.metricsTimeline = {x:[list(),list()] for x in self.metrics}

@@ -4,9 +4,9 @@ from scipy.stats import qmc, kstest
 from torch import nn
 from range_finder import RangeFinder
 
-from validation_statistic import ValidationStatistic
+from convergence_metric import ConvergenceMetric
 
-class MomentsStatistic(ValidationStatistic):
+class MomentsStatistic(ConvergenceMetric):
     def __init__(self, params, vals, threshold=None, momentsCount = 4, momentsWeights = None, use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
         self.momentsCount = momentsCount

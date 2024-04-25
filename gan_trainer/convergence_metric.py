@@ -1,7 +1,7 @@
 import numpy as np
 from torch import nn
 
-class ValidationStatistic:
+class ConvergenceMetric:
     def __init__(self,params:np.array, vals:np.array, threshold:float, use_cuda=False):
         self.use_cuda = use_cuda
         self.threshold = threshold

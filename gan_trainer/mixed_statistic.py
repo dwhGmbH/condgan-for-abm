@@ -2,10 +2,10 @@ from torch import nn
 
 from kstest_statistic import KSTestStatistic
 from moments_statistic import MomentsStatistic
-from validation_statistic import ValidationStatistic
+from convergence_metric import ConvergenceMetric
 
 
-class MixedStatistic(ValidationStatistic):
+class MixedMetric(ConvergenceMetric):
     def __init__(self, params, vals, threshold=None, pointsPerCluster=1000, momentsCount=4, momentsWeights=None,
                  use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
