@@ -26,5 +26,5 @@ class Scaler:
     def downscale(self,data):
         return (data-self.left)/self.span
         
-    def norm(self,data):
+    def clamp(self, data):
         return np.maximum(np.minimum(data,1.0),0.0)
