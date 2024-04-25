@@ -1,5 +1,5 @@
 {
-    "scenario":"ems_5e-7",
+    "scenario":"ems_2e-7_256",
     "data":{
       "dataFile":"../data/trainingSet_ems.pickle",
       "parameterSpace":[
@@ -30,10 +30,10 @@
          "id":"WASSERSTEIN_GP",
          "gradientPenaltyFactor":10
       },
-      "batchSize":512,
-      "epochs": 1000,
+      "batchSize":256,
+      "epochs": 3000,
       "learningRate":{
-         "initial":0.0000005
+         "initial":0.0000002
       }
    },
    "convergenceMetric": {

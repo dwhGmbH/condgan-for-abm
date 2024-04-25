@@ -1,5 +1,5 @@
 {
-    "scenario":"ems_2e-7",
+    "scenario":"ems_2e-7_512",
     "data":{
       "dataFile":"../data/trainingSet_ems.pickle",
       "parameterSpace":[
@@ -31,7 +31,7 @@
          "gradientPenaltyFactor":10
       },
       "batchSize":512,
-      "epochs": 1000,
+      "epochs": 3000,
       "learningRate":{
          "initial":0.0000002
       }
