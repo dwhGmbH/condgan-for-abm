@@ -5,7 +5,18 @@ from matplotlib import pyplot as plt
 from range_finder import RangeFinder
 
 class ValidationPlotter:
-    def __init__(self,parameters,values,metrics,views=None,use_cuda = False):
+    """
+    Class to plot important features of the training process of a congGAN
+    """
+    def __init__(self,parameters:np.array,values:np.array,metrics:list[str],views:list=None,use_cuda:bool = False):
+        """
+        TODO HERE
+        :param parameters:
+        :param values:
+        :param metrics:
+        :param views:
+        :param use_cuda:
+        """
         self.metrics = metrics
         self.use_cuda = use_cuda
         if views==None:
@@ -56,8 +67,9 @@ class ValidationPlotter:
 
         for m in self.metrics:
             plt.subplot(self.rows, self.columns, i)
-            pl, = plt.plot([None], [None])
-            self.plothandles[m] = [plt.gca(),pl]
+            pl, = plt.plot([None], [None],color='k')
+            pl2, = plt.plot([None], [None],color='r',linewidth=2)
+            self.plothandles[m] = [plt.gca(),pl,pl2]
             i += 1
             plt.title(m)
             if not 'loss' in m:
@@ -89,10 +101,22 @@ class ValidationPlotter:
             ax = self.plothandles[key][0]
             self.plothandles[key][1].set_xdata(times)
             self.plothandles[key][1].set_ydata(values)
+            expma = self.get_exp_moving_average(times,values)
+            self.plothandles[key][2].set_xdata(times)
+            self.plothandles[key][2].set_ydata(expma)
             ax.relim()
             ax.autoscale_view()
         plt.suptitle('epoch {}'.format(epoch))
         plt.tight_layout()
+
+    def get_exp_moving_average(self,times:list,values:list,memory:int=50):
+        expma = [values[0]]
+        for i in range(1,len(values)):
+            dt = times[i]-times[i-1]
+            fac = min(dt/memory,1)
+            expma.append(fac*values[i]+(1-fac)*expma[i-1])
+        return expma
+
 
     def update_from_generator(self,epoch,generator,metricsTimeLine):
         generatedX = dict()
