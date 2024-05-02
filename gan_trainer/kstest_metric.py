@@ -8,7 +8,8 @@ from convergence_metric import ConvergenceMetric
 
 
 class KSTestMetric(ConvergenceMetric):
-    def __init__(self, params:np.array, vals:np.array, threshold:float = None, use_cuda:bool=False, m:int = 1000, radius:float = None, s:int = None):
+    def __init__(self, params: np.array, vals: np.array, threshold: float = None, use_cuda: bool = False, m: int = 1000,
+                 radius: float = None, s: int = None):
         """
         Constructor of the metric calculator.
         Computes the metrics based on a series Kolmogorov-Smirnoff tests for a series of selected points within the parameterset.
@@ -47,18 +48,19 @@ class KSTestMetric(ConvergenceMetric):
         self.spheres = dict()
         self.vals = vals
         self.params = params
-        if radius == None and s==None:
+        if radius == None and s == None:
             s = int(len(vals) / m)
         sampler = qmc.Halton(d=dim, scramble=False)
         sampled = sampler.random(n=m)
-        for sample in sampled: #iterate over sampled points
-            if radius !=None:
+        for sample in sampled:  # iterate over sampled points
+            if radius != None:
                 r = radius
-                inds, pts = self.range_finder.find_in_radius(sample, radius) #find all parameter vectors in epsilon ball
+                inds, pts = self.range_finder.find_in_radius(sample,
+                                                             radius)  # find all parameter vectors in epsilon ball
             else:
-                inds, r = self.range_finder.find_nearest_s(sample, s) #find all parameter vectors in epsilon ball
-            vs = vals[inds] #find corresponding values
-            self.spheres[tuple(sample)] = [sample, r] #bookkeeping for validation
+                inds, r = self.range_finder.find_nearest_s(sample, s)  # find all parameter vectors in epsilon ball
+            vs = vals[inds]  # find corresponding values
+            self.spheres[tuple(sample)] = [sample, r]  # bookkeeping for validation
             self.reference[tuple(sample)] = vs
             self.latents[tuple(sample)] = torch.concat([torch.tensor(params[inds]), torch.rand((len(inds), 1))], dim=1)
             if self.use_cuda:
@@ -73,12 +75,12 @@ class KSTestMetric(ConvergenceMetric):
         for k in self.reference.keys():
             mid = self.spheres[k][0]
             rad = self.spheres[k][1]
-            circle = plt.Circle((mid[0],mid[1]),rad,linewidth=0.1, zorder=0, fill= False)
+            circle = plt.Circle((mid[0], mid[1]), rad, linewidth=0.1, zorder=0, fill=False)
             plt.gca().add_patch(circle)
         plt.scatter([x[0] for x in self.params[::1000]], [x[1] for x in self.params[::1000]], s=0.1, color='k',
                     marker='.', zorder=1)
-        
-    def eval_generator(self,generator:nn.Module) -> (dict[str,float],bool):
+
+    def eval_generator(self, generator: nn.Module) -> (dict[str, float], bool):
         """
         Evaluates the metric for the Generator network in its current training status.
         See :func: `gan_trainer.kstest_metric.KSTestMetric.__init__` for methodological details.
@@ -88,14 +90,14 @@ class KSTestMetric(ConvergenceMetric):
         """
         stats1 = list()
         stats2 = list()
-        for p in self.reference.keys(): # iterate over all epsion balls
-            gen = generator(self.latents[p]).detach().cpu() # generate from latents
-            gen = np.array(gen).reshape([len(self.latents[p])]) # reshape for kstest
-            st = kstest(self.reference[p], gen) # compute KS Test
+        for p in self.reference.keys():  # iterate over all epsion balls
+            gen = generator(self.latents[p]).detach().cpu()  # generate from latents
+            gen = np.array(gen).reshape([len(self.latents[p])])  # reshape for kstest
+            st = kstest(self.reference[p], gen)  # compute KS Test
             stats1.append(st[0])
             stats2.append(st[1])
-        s1 = sum(stats1) / len(stats1) # take average
-        s2 = sum(stats2) / len(stats2) # take average
+        s1 = sum(stats1) / len(stats1)  # take average
+        s2 = sum(stats2) / len(stats2)  # take average
         if self.threshold != None:
             return {'kstest': s1, 'pvalue': s2}, s1 < self.threshold
         else:
@@ -105,6 +107,4 @@ class KSTestMetric(ConvergenceMetric):
         """
         :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.kstest_metric.KSTestMetric.eval_generator`
         """
-        return ['kstest','pvalue']
-
-
+        return ['kstest', 'pvalue']

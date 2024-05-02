@@ -11,12 +11,13 @@ class MixedMetric(ConvergenceMetric):
     The KSTestMetric is used for evaluating whether the training process can be stopped.
     Technically, the two classes are simply wrapped into one.
     """
-    def __init__(self, params, vals, threshold=None, m=1000, k=4, mu=None,use_cuda=False):
+
+    def __init__(self, params, vals, threshold=None, m=1000, k=4, mu=None, use_cuda=False):
         super().__init__(params, vals, threshold, use_cuda)
         self.kstestStatistic = KSTestMetric(params, vals, threshold=threshold, m=m, use_cuda=use_cuda)
         self.momentsStatistic = MomentsMetric(params, vals, threshold=None, k=k, mu=mu, use_cuda=use_cuda)
 
-    def eval_generator(self, generator: nn.Module) -> (dict[str,float], bool):
+    def eval_generator(self, generator: nn.Module) -> (dict[str, float], bool):
         """
         Evaluates the metrics for the Generator network in its current training status.
         Essentially calls the corresponding methods of the two wrapped classes.
@@ -24,7 +25,7 @@ class MixedMetric(ConvergenceMetric):
         :param generator: Generator network
         :return: dict object with current statistics and a bool indicating whether training should be stopped
         """
-        stats, stop  = self.momentsStatistic.eval_generator(generator)
+        stats, stop = self.momentsStatistic.eval_generator(generator)
         stats2, stop = self.kstestStatistic.eval_generator(generator)
         stats.update(stats2)
         return stats, stop

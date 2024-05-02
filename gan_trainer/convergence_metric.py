@@ -1,12 +1,14 @@
 import numpy as np
 from torch import nn
 
+
 class ConvergenceMetric:
     """
     Base class for computing convergence metrics to check the training progress of the condGAN game.
     Should be treated as an abstract class, i.e. it should not be used as it is.
     """
-    def __init__(self,params:np.array, vals:np.array, threshold:float=None, use_cuda:bool=False):
+
+    def __init__(self, params: np.array, vals: np.array, threshold: float = None, use_cuda: bool = False):
         """
         Constructor of a convergence metrics calculator object.
         Since convergence metrics need to compare the training data with the synthetic data created by the Generator, the constructor needs to be given the training data.
@@ -19,18 +21,16 @@ class ConvergenceMetric:
         self.use_cuda = use_cuda
         self.threshold = threshold
 
-    def eval_generator(self, generator:nn.Module) -> (dict[str,float], bool):
+    def eval_generator(self, generator: nn.Module) -> (dict[str, float], bool):
         """
         Evaluates the metrics for the Generator network in its current training status.
         :param generator: Generator network
         :return: dict object with current statistics and a bool indicating whether training should be stopped
         """
-        return {},False
+        return {}, False
 
     def get_statistics_names(self) -> list[str]:
         """
         :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.convergence_metric.eval_generator`
         """
         return []
-
-

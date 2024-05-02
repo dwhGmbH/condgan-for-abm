@@ -2,11 +2,13 @@ import torch
 from torch import nn
 from config import CondGANConfig
 
+
 class GenericMLP(nn.Module):
     """
     Generic multilayer perceptron. Wraps the torch.nn.Sequential class and simplfies its initialization
     """
-    def __init__(self, sequence:list[int], dropout:float=0.0, finish_sigmoid:bool = False):
+
+    def __init__(self, sequence: list[int], dropout: float = 0.0, finish_sigmoid: bool = False):
         """
         Wraps the torch.nn.Sequential class to simplify the initialization process.
         The network will have len(sequence) fully and linearly connected layers whereas layer i has the corresponding number sequence[i] of nodes
@@ -22,17 +24,17 @@ class GenericMLP(nn.Module):
         """
         super().__init__()
         Q = list()
-        for i,j in zip(sequence[:-2],sequence[1:-1]):
+        for i, j in zip(sequence[:-2], sequence[1:-1]):
             Q.append(nn.Linear(i, j))
             Q.append(nn.ReLU())
-            if dropout>0:
+            if dropout > 0:
                 Q.append(nn.Dropout(dropout))
         Q.append(nn.Linear(sequence[-2], sequence[-1]))
         if finish_sigmoid:
             Q.append(nn.Sigmoid())
         self.model = nn.Sequential(*Q)
 
-    def forward(self, x:torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Evaluates the model.
         :param x: input to the network
@@ -42,7 +44,7 @@ class GenericMLP(nn.Module):
         return output
 
 
-def create_mlps_from_config(config:CondGANConfig) -> (GenericMLP,GenericMLP):
+def create_mlps_from_config(config: CondGANConfig) -> (GenericMLP, GenericMLP):
     """
     Creates untrained new networks accroding to the configuration file
     :param config: configuration of the condGAN training experiment
@@ -52,9 +54,10 @@ def create_mlps_from_config(config:CondGANConfig) -> (GenericMLP,GenericMLP):
     generator = GenericMLP(params['sequence'], params['dropout'], params['finishSigmoid'])
     params = config.get_critic_hyperparams()
     critic = GenericMLP(params['sequence'], params['dropout'], params['finishSigmoid'])
-    return generator,critic
+    return generator, critic
 
-def load_generator_from_state(config:CondGANConfig,filename:str) -> GenericMLP:
+
+def load_generator_from_state(config: CondGANConfig, filename: str) -> GenericMLP:
     """
     Loads a generator from a saved state.
     :param config: configuration of the condGAN training experiment to specify structure of the generator
@@ -66,7 +69,8 @@ def load_generator_from_state(config:CondGANConfig,filename:str) -> GenericMLP:
     generator.load_state_dict(torch.load(filename))
     return generator
 
-def load_critic_from_state(config:CondGANConfig,filename:str):
+
+def load_critic_from_state(config: CondGANConfig, filename: str):
     """
     Loads a critic from a saved state.
     :param config: configuration of the condGAN training experiment to specify structure of the generator

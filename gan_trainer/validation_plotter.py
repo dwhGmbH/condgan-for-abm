@@ -5,11 +5,14 @@ from torch import nn
 from matplotlib import pyplot as plt
 from range_finder import RangeFinder
 
+
 class BoundaryDensityPlot:
     """
     Plots and updates a boundary density view of the training process
     """
-    def __init__(self,view_specification:dict,range_finder:RangeFinder,training_parameters:np.array,training_values:np.array, use_cuda:bool = False):
+
+    def __init__(self, view_specification: dict, range_finder: RangeFinder, training_parameters: np.array,
+                 training_values: np.array, use_cuda: bool = False):
         """
         Initializes a scatter or histogram plot for the boundary density specified by the "view_specification"
         :param view_specification: See :func:`gan_trainer.validation_plotter.BoundaryDensityPlot.__init__` for details
@@ -27,7 +30,7 @@ class BoundaryDensityPlot:
         if 'radius' in view_specification.keys():
             self.radius = float(view_specification['radius'])
             indices, self.nof_points = range_finder.find_in_radius(np.array(self.parameters), self.radius)
-            if self.nof_points==0:
+            if self.nof_points == 0:
                 self.nof_points = 100
                 indices, self.radius = range_finder.find_nearest_s(np.array(self.parameters), self.nof_points)
         else:
@@ -40,8 +43,8 @@ class BoundaryDensityPlot:
         if self.use_cuda:
             self.latents = self.latents.cuda()
         if None in self.parameters:
-            k = [x for x in self.parameters if x==None]
-            assert len(k)==1, 'Only one None argument allowed per view specification'
+            k = [x for x in self.parameters if x == None]
+            assert len(k) == 1, 'Only one None argument allowed per view specification'
             self.viewDim = self.parameters.index(None)
             self.isScatter = True
             X = [x[self.viewDim] for x in self.Udata]
@@ -52,9 +55,9 @@ class BoundaryDensityPlot:
                                               markersize=2)  # empty scatterplot for synthetic data
         else:
             self.isScatter = False
-        plt.title('{:}, (r:{:.02f}, pts:{:.0f})'.format(self.parameters, self.radius,self.nof_points))
+        plt.title('{:}, (r:{:.02f}, pts:{:.0f})'.format(self.parameters, self.radius, self.nof_points))
 
-    def update(self,generator:nn.Module):
+    def update(self, generator: nn.Module):
         """
         Updates the plot
         :param generator: current status of the generator network
@@ -71,11 +74,14 @@ class BoundaryDensityPlot:
             self.ax.relim()
             self.ax.autoscale_view()
             plt.title('{:}, (r:{:.02f}, pts:{:.0f})'.format(self.parameters, self.radius, self.nof_points))
+
+
 class ConvergenceMetricsPlot:
     """
     Plots and updates a convergence metric visualization of the training process
     """
-    def __init__(self,metricsName:str):
+
+    def __init__(self, metricsName: str):
         """
         Initializes a plot for convergence tracking.
         Automatically uses log-scale for all metrics which do not include the term "loss"
@@ -83,14 +89,14 @@ class ConvergenceMetricsPlot:
         """
         self.ax = plt.gca()
         self.name = metricsName
-        self.plothandle1, = plt.plot([None], [None], color='k') #empty plot for metric
-        self.plothandle2, = plt.plot([None], [None], color='r', linewidth=2) #empty plot for moving average
+        self.plothandle1, = plt.plot([None], [None], color='k')  # empty plot for metric
+        self.plothandle2, = plt.plot([None], [None], color='r', linewidth=2)  # empty plot for moving average
         if 'loss' in metricsName:
-            plt.yscale('log') #log scale is usually the better option for something that "converges" somewhere
+            plt.yscale('log')  # log scale is usually the better option for something that "converges" somewhere
         plt.grid()
         plt.title(metricsName)
 
-    def get_exp_moving_average(self,times:list[int],values:list,memory:int=50) -> list:
+    def get_exp_moving_average(self, times: list[int], values: list, memory: int = 50) -> list:
         """
         Helper routine to compute the moving average in epochs
         :param times: timesteps in epochs (integers)
@@ -99,13 +105,13 @@ class ConvergenceMetricsPlot:
         :return: list with equal format and length as "values"
         """
         expma = [values[0]]
-        for i in range(1,len(values)):
-            dt = times[i]-times[i-1]
-            fac = min(dt/memory,1)
-            expma.append(fac*values[i]+(1-fac)*expma[i-1])
+        for i in range(1, len(values)):
+            dt = times[i] - times[i - 1]
+            fac = min(dt / memory, 1)
+            expma.append(fac * values[i] + (1 - fac) * expma[i - 1])
         return expma
 
-    def update(self,metric_timelines:dict[str,tuple[list,list]]):
+    def update(self, metric_timelines: dict[str, tuple[list, list]]):
         """
         Updates the plot from a metric_timelines dictionary, as it is internally used by the gan trainer
         :param metric_timelines: dict object with timeseries of the metric
@@ -114,19 +120,20 @@ class ConvergenceMetricsPlot:
         values = metric_timelines[self.name][1]
         self.plothandle1.set_xdata(times)
         self.plothandle1.set_ydata(values)
-        expma = self.get_exp_moving_average(times,values,memory=50)
+        expma = self.get_exp_moving_average(times, values, memory=50)
         self.plothandle2.set_xdata(times)
         self.plothandle2.set_ydata(expma)
         self.ax.relim()
         self.ax.autoscale_view()
 
 
-
 class ValidationPlotter:
     """
     Class to plot important features of the training process of a congGAN
     """
-    def __init__(self,parameters:np.array,values:np.array,metrics:list[str],views:list[dict]=None,use_cuda:bool = False):
+
+    def __init__(self, parameters: np.array, values: np.array, metrics: list[str], views: list[dict] = None,
+                 use_cuda: bool = False):
         """
         The validation plotter is used to visually track the convergence process of the congGAN trainer
         The visualisation it creates cnsists of multiple view panels, which can be split into two classes.
@@ -164,28 +171,29 @@ class ValidationPlotter:
         :param views: list of views according to the specification
         :param use_cuda: whether to use a GPU for computing the statistics
         """
-        if views==None:
+        if views == None:
             views = []
-        l = len(views)+len(metrics)
-        a = int(math.ceil(l**0.5))
-        b = int(math.ceil(l/a))
+        l = len(views) + len(metrics)
+        a = int(math.ceil(l ** 0.5))
+        b = int(math.ceil(l / a))
         self.rows = a
         self.columns = b
 
         self.plots = list()
-        self.fig = plt.figure(figsize=(16,9))
+        self.fig = plt.figure(figsize=(16, 9))
         i = 1
         range_finder = RangeFinder(parameters)
         for view_specification in views:
-            plt.subplot(self.rows,self.columns,i)
-            i+=1
-            self.plots.append(BoundaryDensityPlot(view_specification,range_finder,parameters,values,use_cuda=use_cuda))
+            plt.subplot(self.rows, self.columns, i)
+            i += 1
+            self.plots.append(
+                BoundaryDensityPlot(view_specification, range_finder, parameters, values, use_cuda=use_cuda))
         for m in metrics:
             plt.subplot(self.rows, self.columns, i)
             i += 1
             self.plots.append(ConvergenceMetricsPlot(m))
 
-    def update_from_generator(self, epoch:int, generator:nn.Module, metric_timelines:dict[str,tuple[list,list]]):
+    def update_from_generator(self, epoch: int, generator: nn.Module, metric_timelines: dict[str, tuple[list, list]]):
         """
         Updates the views using the current status of the generator network
         :param epoch: current training epoch (only for the sup-title)
@@ -199,5 +207,3 @@ class ValidationPlotter:
                 plot.update(metric_timelines)
         plt.suptitle('epoch {}'.format(epoch))
         plt.tight_layout()
-
-

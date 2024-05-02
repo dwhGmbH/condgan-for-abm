@@ -4,14 +4,16 @@ import shutil
 from datetime import datetime
 from enum import Enum
 
+
 class LossFunctionID(Enum):
     """
     Supported types of loss functions
     """
-    BINARY=0,
+    BINARY = 0,
     LOG = 1,
     WASSERSTEIN_GP = 2
     WASSERSTEIN_CLAMP = 3
+
 
 class ConvergenceMetricsID(Enum):
     """
@@ -21,27 +23,30 @@ class ConvergenceMetricsID(Enum):
     KSTEST = 1,
     MIXED = 2
 
+
 class CondGANConfig:
     """
     Configuration for a conditional GAN training process
     """
-    def __init__(self,filename:str):
+
+    def __init__(self, filename: str):
         """
         Loads a configuration file in JSON format.
         The required and optional fields can be identified from the examples in the "configs" folder.
         :param filename: full path to the configuration file
         """
-        with open(filename,'r') as f:
+        with open(filename, 'r') as f:
             self.file_content = json.load(f)
         self.timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         resfolder = self.file_content['resultFolder']
         if not os.path.isdir(resfolder):
             os.mkdir(resfolder)
-        self.resultfolder = os.path.join(resfolder,'Experiment_{}_{}'.format(self.file_content['scenario'],self.timestamp))
+        self.resultfolder = os.path.join(resfolder,
+                                         'Experiment_{}_{}'.format(self.file_content['scenario'], self.timestamp))
         if not os.path.isdir(self.resultfolder):
             os.mkdir(self.resultfolder)
         conff = os.path.split(filename)[-1]
-        shutil.copyfile(filename,os.path.join(self.resultfolder,conff))
+        shutil.copyfile(filename, os.path.join(self.resultfolder, conff))
 
     def get_traing_data_file(self) -> str:
         """
@@ -93,16 +98,16 @@ class CondGANConfig:
         """
         return self.file_content['scenario']
 
-    def get_parameter_space(self) -> list[tuple[float,float]]:
+    def get_parameter_space(self) -> list[tuple[float, float]]:
         """
         returns a list of tuples. The length of the list matches the length of the input parameter vector.
         The tuple entries refer to the lower and upper bound of the parameter.
         Used for normalization of the input.
         :return: parameter-space of the input vector
         """
-        return [(x[0],x[1]) for x in self.file_content['data']['parameterSpace']]
+        return [(x[0], x[1]) for x in self.file_content['data']['parameterSpace']]
 
-    def get_value_space(self) -> tuple[float,float]:
+    def get_value_space(self) -> tuple[float, float]:
         """
         The tuple entries refer to the lower and upper bound of the value space
         Used for normalization of the training data and de-normalization of the output.
