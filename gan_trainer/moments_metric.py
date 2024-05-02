@@ -57,7 +57,7 @@ class MomentsMetric(ConvergenceMetric):
 
     def get_statistics_names(self):
         """
-        :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.moments_metric.eval_generator`
+        :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.moments_metric.MomentsMetric.eval_generator`
         """
         return self.statistic_names
 

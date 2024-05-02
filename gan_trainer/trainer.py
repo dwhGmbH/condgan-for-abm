@@ -85,8 +85,8 @@ class CondGANTrainer():
             elif self.convergenceMetricID == ConvergenceMetricsID.MIXED:
                 self.convergenceMetric= MixedMetric(self.trainingParameters, self.trainingValues, threshold=self.config.get_convergence_metrics_stopping_threshold(), use_cuda=self.use_cuda)
             self.metrics.extend(self.convergenceMetric.get_statistics_names()) #add names to track
-        self.metricValues = {x:0 for x in self.metrics} #current values of metrics
-        self.metricsTimeline = {x:[list(),list()] for x in self.metrics} #"historic" values of metrics
+        self.metric_values = {x:0 for x in self.metrics} #current values of metrics
+        self.metric_timelines = {x:[list(), list()] for x in self.metrics} #"historic" values of metrics
         if self.config.get_visualisation_update_interval() > 0: #create a plotter object
             self.plotHandler = ValidationPlotter(self.trainingParameters,self.trainingValues,self.metrics,views=self.config.get_views(),use_cuda=self.use_cuda)
 
@@ -107,22 +107,22 @@ class CondGANTrainer():
             if self.config.get_console_log_update_interval()>0 and epoch % self.config.get_console_log_update_interval() == 0:
                 self.print_message(epoch)
             if  self.config.get_visualisation_update_interval() > 0 and epoch%self.config.get_visualisation_update_interval() == 0:
-                self.plotHandler.update_from_generator(epoch, self.G, self.metricsTimeline)
+                self.plotHandler.update_from_generator(epoch, self.G, self.metric_timelines)
                 plt.savefig(self.config.get_resultfolder()+'/visualisation.png', dpi=300)
             if 'reductionInterval' in self.config.get_learning_rate_hyperparams().keys() and self.config.get_learning_rate_hyperparams()['reductionInterval']>0 and epoch%int(self.config.get_learning_rate_hyperparams()['reductionInterval']) == 0:
                 self.reduce_learning_rate()
 
             #update metrics
-            self.metricsTimeline[self._lossGeneratorName][0].append(epoch)
-            self.metricsTimeline[self._lossGeneratorName][1].append(self.metricValues[self._lossGeneratorName])
-            self.metricsTimeline[self._lossCriticName][0].append(epoch)
-            self.metricsTimeline[self._lossCriticName][1].append(self.metricValues[self._lossCriticName])
+            self.metric_timelines[self._lossGeneratorName][0].append(epoch)
+            self.metric_timelines[self._lossGeneratorName][1].append(self.metric_values[self._lossGeneratorName])
+            self.metric_timelines[self._lossCriticName][0].append(epoch)
+            self.metric_timelines[self._lossCriticName][1].append(self.metric_values[self._lossCriticName])
 
             # save snapshot
             if self.config.get_snapshot_export_update_interval()>0 and epoch % self.config.get_snapshot_export_update_interval() == 0:
                 self.save_snapshot(epoch)
         if self.config.get_visualisation_update_interval() > 0:
-            self.plotHandler.update_from_generator(epoch, self.G, self.metricsTimeline)
+            self.plotHandler.update_from_generator(epoch, self.G, self.metric_timelines)
             plt.savefig(self.config.get_resultfolder() + '/visualisation.png', dpi=300)
         self.save_snapshot(epoch,final=True)
         if epoch == self.config.get_epochs():
@@ -145,7 +145,7 @@ class CondGANTrainer():
         """
         Saves a snapshot of the current status of the training process. This includes
         - a .state export of the generator and the critic network
-        - a .torch export of the genetator and the critic network
+        - a .torch export of the generator and the critic network
         - a .json file with time-series of the tracked metrics
         - (if plotting is active) a .png image with a visualisation of the training process
         If the final parameter is checked, the files will be exported to the overall result folder of the experiment,
@@ -169,7 +169,7 @@ class CondGANTrainer():
         model_scripted = torch.jit.script(self.C)
         model_scripted.save(folder+'/critic_torchScript_{:}.pt'.format(epoch))
         snapshot = dict()
-        snapshot['metrics'] = self.metricsTimeline
+        snapshot['metrics'] = self.metric_timelines
         with open(folder+'/metrics.json','w') as f:
             json.dump(snapshot,f,indent=4)
 
@@ -179,7 +179,7 @@ class CondGANTrainer():
         :param epoch: current training epoch
         """
         for key in self.metrics:
-            print("{}: {}".format(key,self.metricValues[key]))
+            print("{}: {}".format(key, self.metric_values[key]))
         avg = (self._ticks[-1]-self._ticks[0])/len(self._ticks)
         togo = avg*(self.config.get_epochs()-epoch)
         past = epoch*avg
@@ -194,9 +194,9 @@ class CondGANTrainer():
         """
         statistics,isStop = self.convergenceMetric.eval_generator(self.G)
         for k,v in statistics.items(): #update tracker variables to create output
-            self.metricValues[k] = v
-            self.metricsTimeline[k][0].append(epoch + 1)
-            self.metricsTimeline[k][1].append(v)
+            self.metric_values[k] = v
+            self.metric_timelines[k][0].append(epoch + 1)
+            self.metric_timelines[k][1].append(v)
         return isStop
 
     def _train_epoch(self, data_loader:torch.utils.data.DataLoader):
@@ -227,7 +227,7 @@ class CondGANTrainer():
                 p.data.clamp_(-self.wassersteinClamp, self.wassersteinClamp)
         loss.backward() # compute gradients
         self.C_opt.step() # make optimizer step
-        self.metricValues[self._lossCriticName] = float(loss.cpu().mean().data.numpy()) #update tracked metric
+        self.metric_values[self._lossCriticName] = float(loss.cpu().mean().data.numpy()) #update tracked metric
 
     def _generator_train_iteration(self, data:torch.Tensor):
         """
@@ -241,7 +241,7 @@ class CondGANTrainer():
         self.G_opt.zero_grad()
         g_loss.backward() # compute gradients
         self.G_opt.step() # make optimizer step
-        self.metricValues[self._lossGeneratorName] = float(g_loss.cpu().mean().data.numpy()) #update tracked metric
+        self.metric_values[self._lossGeneratorName] = float(g_loss.cpu().mean().data.numpy()) #update tracked metric
 
     def loss_generator_base(self,output_latent:torch.Tensor) -> torch.Tensor:
         """

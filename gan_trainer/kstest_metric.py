@@ -81,7 +81,7 @@ class KSTestMetric(ConvergenceMetric):
     def eval_generator(self,generator:nn.Module) -> (dict[str,float],bool):
         """
         Evaluates the metric for the Generator network in its current training status.
-        See :func: `gan_trainer.kstest_metric.__init__` for methodological details.
+        See :func: `gan_trainer.kstest_metric.KSTestMetric.__init__` for methodological details.
         Termination is decided upon the average value of all KSTest statistics
         :param g: Generator network
         :return: dict object with current statistics and a bool indicating whether training should be stopped
@@ -103,7 +103,7 @@ class KSTestMetric(ConvergenceMetric):
 
     def get_statistics_names(self) -> list[str]:
         """
-        :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.moments_metric.eval_generator`
+        :return: names of the statistics evaluated in the class. Match the keys of the dict returned by :func: `gan_trainer.kstest_metric.KSTestMetric.eval_generator`
         """
         return ['kstest','pvalue']
 
