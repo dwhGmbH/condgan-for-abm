@@ -1,0 +1,159 @@
+{
+  "scenario": "weibull",
+  "#scenario": "some catchy name for the experiment",
+  "seed": 12345,
+  "#seed": "random number seed fr reproducible training",
+  "data": {
+    "dataFile": "../data/trainingSet_synthetic_weibull.pickle",
+    "#dataFile": "path to the parameter file, either absolute or relative to the Python working directory",
+    "parameterSpace": [
+      [
+        0,
+        65000
+      ],
+      [
+        0,
+        1200
+      ]
+    ],
+    "#parameterSpace": "for every parameter dimension, add a tuple with lower and upper bound of the parameter values",
+    "valueSpace": [
+      0,
+      20
+    ],
+    "#valueSpace": "tuple with lower and upper bound of the output values"
+  },
+  "#data": "specification of the training data",
+  "resultFolder": "../results",
+  "#resultFoler": "path to the output folder for the condGAN trainer, either absolute or relative to the Python working directory. Must have writing permissions there!",
+  "generatorNetwork": {
+    "sequence": [
+      3,
+      128,
+      128,
+      1
+    ],
+    "#sequence": "sequence of nodes in the input-, hidden- and output layers of the MLP",
+    "dropout": 0.0,
+    "#dropout": "number between 0 and 1 to indicate how much connections should be dropped-out while training",
+    "finishSigmoid": false,
+    "#finishSigmoid": "if true, a sigmoidal output function is added at the end to clamp the output to [0,1] (recommended for the Critic without Wasserstein loss)"
+  },
+  "#generatorNetwork": "specification of the MLP for the generator",
+  "criticNetwork": {
+    "sequence": [
+      3,
+      128,
+      128,
+      1
+    ],
+    "dropout": 0.0,
+    "finishSigmoid": false
+  },
+  "#criticNetwork": "specification of the MLP for the crtic",
+  "learning": {
+    "lossFunction": {
+      "id": "WASSERSTEIN_GP",
+      "gradientPenaltyFactor": 10,
+      "#gradientPenaltyFactor": "used/required for WASSERSTEIN_GP loss only",
+      "clampThreshold": 0.01,
+      "#clampThreshold": "used/required for WASSERSTEIN_CLAMP loss only"
+    },
+    "#lossFunction": "specification of the loss function. Supported are BINARY, LOG, WASSERSTEIN_GP and WASSERSTEIN_CLAMP.",
+    "epochs": 3000,
+    "#epochs": "maximum number of training epochs (premature termination e.g. if stoppingTreshold is reached, see below)",
+    "batchSize": 512,
+    "#batchSize": "size of the batches used for training. Larger size might lead to overfitting but is usually faster.",
+    "learningRate": {
+      "initial": 0.0000002,
+      "#initial": "initial value for the learning rate. If reductionInterval=0, then the value will be used as static learning rate",
+      "reductionInterval": 0,
+      "#reductionInterval": "if >0, then the learning rate will be reduced by a factor every reductionInterval epochs",
+      "reductionFactor": 0.99,
+      "#reductionFactor": "if reductionInterval>0, then the learning rate will be multiplied with reductionFactor every reductionInterval epochs",
+      "minimum": 0.000000001,
+      "#minimum": "reduction stops if the larning rate has dropped below this threshold"
+    },
+    "#learningRate": "specification of the leaning rate. Can either use a static value or can be reduced from epoch to epoch"
+  },
+  "#learning": "specification of hyperparameters for the learning process",
+  "convergenceMetric": {
+    "id": "MIXED",
+    "#id": "id of the convergence metric. Currently supported are KSTEST,MOMENTS and MIXED",
+    "updateInterval": 10,
+    "#updateInterval": "if >0, then the metrics will be updated every updateInterval epochs",
+    "stoppingThreshold": 0.00001,
+    "#stoppingThreshold": "the training process stops if the value of the corresponding metric drops below this value"
+  },
+  "#convergenceMetric": "specification of the convergence metric and corresponding hyperparameters",
+  "consoleLog": {
+    "updateInterval": 10,
+    "#updateInterval": "if >0, then a console message will be printed out every updateInterval epochs"
+  },
+  "#consoleLog": "specification of console logging properties",
+  "snapshotExport": {
+    "updateInterval": 10,
+    "#updateInterval": "if >0, then a snapshot of the training progress will be exported every updateInterval epochs"
+  },
+  "#snapshotExport": "specification of snapshot export properties",
+  "visualisation": {
+    "updateInterval": 10,
+    "#updateInterval": "if >0, then the visualisation will be updated every updateInterval epochs",
+    "views": [
+      {
+        "parameters": [
+          0,
+          null
+        ],
+        "#parameters": "specification of a point in the parameterspace around which the boundary density should be displayed. If a null entry is contained, the distribution is visualised along this axis.",
+        "nof_points": 1000,
+        "#nof_points": "number of parameter vectors around the point which should be regarded for computing the boundary density. Can either specify radius or nof_points."
+      },
+      {
+        "parameters": [
+          0.5,
+          null
+        ],
+        "nof_points": 1000
+      },
+      {
+        "parameters": [
+          1.0,
+          null
+        ],
+        "nof_points": 1000
+      },
+      {
+        "parameters": [
+          null,
+          0.0
+        ],
+        "nof_points": 1000
+      },
+      {
+        "parameters": [
+          null,
+          0.7
+        ],
+        "nof_points": 1000
+      },
+      {
+        "parameters": [
+          0.0,
+          0.0
+        ],
+        "radius": 0.2
+      },
+      {
+        "parameters": [
+          0.5,
+          0.5
+        ],
+        "radius": 0.2,
+        "#nof_points": "radius of the epsilon ball around the point for which the boundary density is regarded. Can either specify radius or nof_points."
+      }
+    ],
+    "#views": "speicification of boundary densities which should be displayed in the visualisation"
+  },
+  "#visualisation": "specification of visualisation properties"
+}

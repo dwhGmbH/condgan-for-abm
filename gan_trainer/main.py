@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 
-from config import CondGANConfig
-from loader import TraingSetLoader
+from condgan_config import CondGANConfig
+from training_set_loader import TraingSetLoader
 from scaler import Scaler
-from trainer import CondGANTrainer
+from condgan_trainer import CondGANTrainer
 import sys
 import os
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
         else:
             raise RuntimeError('Cannot find path or file specified')
     else:
-        filenames = ['../configs/config_weibull_2e-7.json']
+        filenames = ['../configs/config_weibull.json']
 
     useCuda = torch.cuda.is_available()  # use cuda if available
     print(f'cuda: {useCuda}')

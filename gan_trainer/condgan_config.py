@@ -1,8 +1,12 @@
 import json
 import os
+import random
 import shutil
 from datetime import datetime
 from enum import Enum
+
+import numpy as np
+import torch
 
 
 class LossFunctionID(Enum):
@@ -47,6 +51,24 @@ class CondGANConfig:
             os.mkdir(self.resultfolder)
         conff = os.path.split(filename)[-1]
         shutil.copyfile(filename, os.path.join(self.resultfolder, conff))
+
+        self.set_manual_seed(self.file_content['seed'])
+
+    def set_manual_seed(self, seed: int):
+        """
+        Manually sets the seed of the various PRNGs for reproducibiulity reasons.
+        Done automatically, when the config is created.
+        :param seed: seed value
+        """
+        random.seed(self.file_content['seed'])
+        np.random.seed(random.randint(0, 10000000))
+        torch.manual_seed(random.randint(0, 10000000))
+
+    def get_seed(self) -> int:
+        """
+        :return: seed value of the experiment
+        """
+        return self.file_content['seed']
 
     def get_traing_data_file(self) -> str:
         """

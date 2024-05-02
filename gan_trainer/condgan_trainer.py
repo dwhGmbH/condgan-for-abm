@@ -7,7 +7,7 @@ from torch.autograd import Variable
 import os
 import json
 
-from config import CondGANConfig, LossFunctionID, ConvergenceMetricsID
+from condgan_config import CondGANConfig, LossFunctionID, ConvergenceMetricsID
 from kstest_metric import KSTestMetric
 from mixed_metric import MixedMetric
 from moments_metric import MomentsMetric

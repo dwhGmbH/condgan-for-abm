@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from config import CondGANConfig
+from condgan_config import CondGANConfig
 
 
 class GenericMLP(nn.Module):

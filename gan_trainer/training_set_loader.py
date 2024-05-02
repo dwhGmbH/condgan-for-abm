@@ -1,6 +1,6 @@
 import pickle
 import numpy as np
-from config import CondGANConfig
+from condgan_config import CondGANConfig
 
 
 class TraingSetLoader:

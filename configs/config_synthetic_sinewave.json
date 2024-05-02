@@ -1,29 +1,29 @@
 {
-  "scenario": "ems_2e-7_256",
+  "scenario": "synthetic_sinewave",
   "seed": 12345,
   "data": {
-    "dataFile": "../data/trainingSet_ems.pickle",
+    "dataFile": "../data/trainingSet_synthetic_sinewave.pickle",
     "parameterSpace": [
       [
-        0,
-        65000
+        -1,
+        1
       ],
       [
         0,
-        1200
+        1.0
       ]
     ],
     "valueSpace": [
-      0,
-      20
+      -2.5,
+      2.5
     ]
   },
   "resultFolder": "../results",
   "generatorNetwork": {
     "sequence": [
       3,
-      128,
-      128,
+      64,
+      64,
       1
     ],
     "dropout": 0.0,
@@ -32,8 +32,8 @@
   "criticNetwork": {
     "sequence": [
       3,
-      128,
-      128,
+      64,
+      64,
       1
     ],
     "dropout": 0.0,
@@ -42,12 +42,13 @@
   "learning": {
     "lossFunction": {
       "id": "WASSERSTEIN_GP",
-      "gradientPenaltyFactor": 10
+      "gradientPenaltyFactor": 10,
+      "clampThreshold": 0.01
     },
-    "batchSize": 256,
-    "epochs": 3000,
+    "batchSize": 512,
+    "epochs": 1000,
     "learningRate": {
-      "initial": 0.0000002
+      "initial": 0.0001
     }
   },
   "convergenceMetric": {
@@ -66,52 +67,59 @@
     "views": [
       {
         "parameters": [
-          0,
-          null
-        ],
-        "radius": 0.2
-      },
-      {
-        "parameters": [
-          0.5,
-          null
-        ],
-        "radius": 0.2
-      },
-      {
-        "parameters": [
-          1.0,
-          null
-        ],
-        "radius": 0.2
-      },
-      {
-        "parameters": [
           null,
           0.0
         ],
-        "radius": 0.2
+        "radius": 0.01
       },
       {
         "parameters": [
-          null,
-          0.7
+          0.0,
+          null
         ],
-        "radius": 0.3
+        "radius": 0.01
       },
       {
         "parameters": [
           0.0,
           0.0
         ],
-        "radius": 0.3
+        "radius": 0.05
       },
       {
         "parameters": [
-          0.5,
+          null,
           0.5
         ],
-        "radius": 0.3
+        "radius": 0.01
+      },
+      {
+        "parameters": [
+          1.0,
+          null
+        ],
+        "radius": 0.01
+      },
+      {
+        "parameters": [
+          1.0,
+          1.0
+        ],
+        "radius": 0.05
+      },
+      {
+        "parameters": [
+          null,
+          1.0
+        ],
+        "radius": 0.01
+      },
+      {
+        "parameters": [
+          0.0,
+          1.0
+        ],
+        "radius": 0.05
       }
     ]
   }
